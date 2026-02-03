@@ -1,141 +1,117 @@
 # Conciliador de Espelhamento de Acessos (Excel)
 
-Ferramenta em **Python** para **conciliar e validar espelhamentos de acesso** ("quem visualiza quem") entre duas bases no Excel.
+Ferramenta em Python para **conciliar espelhamentos de acesso entre duas bases Excel**, identificando **o que está faltando replicar** após reorganizações de times, mudanças de hierarquia ou ajustes em matrizes de permissão.
 
-Este projeto atende um cenário comum em **operações, risco e compliance**: após mudanças de estrutura, permissões ou equipes, é necessário **reconstruir uma base de espelhamentos** e verificar, de forma objetiva, **o que ainda precisa ser ajustado ou validado**.
-
-> Projeto sanitizado para portfólio: não contém dados reais, nomes internos ou informações sensíveis.
+> **English (short):** Python tool to reconcile access mirroring between two Excel bases and detect missing replications after org/team changes.
 
 ---
 
-## Problema que resolve
+## Principais recursos
 
-Em ambientes operacionais, espelhamentos de acesso costumam ser:
+* Leitura de **duas bases Excel** (origem vs. destino)
+* Normalização de colunas e chaves (ex.: usuário, grupo, perfil, centro de custo etc.)
+* Identificação de:
 
-* reconstruídos manualmente
-* comparados de forma visual
-* suscetíveis a erro humano
-
-Este script elimina esse risco ao **comparar automaticamente** uma base antiga com uma base recriada, entregando **diferenças claras, rastreáveis e auditáveis**.
-
----
-
-## O que o projeto faz
-
-A partir de um arquivo Excel contendo duas bases:
-
-* **Base A (antiga)**
-* **Base B (recriada)**
-
-O script:
-
-* normaliza os dados (remoção de espaços, padronização de strings)
-* elimina duplicidades
-* compara os pares *Visualiza → Visualizado*
-* gera um arquivo Excel final com as diferenças encontradas
-
-### Saída gerada
-
-Um novo arquivo Excel com duas abas:
-
-* **faltando_recriar**
-  Registros que existiam na Base A, mas **não aparecem** na Base B (A − B)
-
-* **novos_na_base_b**
-  Registros que surgiram na Base B e **não existiam** na Base A (B − A)
+  * acessos presentes na origem e **ausentes no destino**
+  * divergências por usuário/grupo (quando aplicável)
+* Geração de **relatório consolidado** para ação (recriar/replicar acessos)
+* Execução simples via `main.py`
 
 ---
 
-## Formato esperado do Excel
+## Contexto
 
-Cada base deve conter **duas colunas**:
+Em ambientes corporativos, é comum existirem planilhas que representam:
 
-* **Visualiza** → usuário que possui o acesso
-* **Visualizado** → usuário que é visualizado
+* **acessos atuais**
+* **espelhamentos desejados** (modelo de referência)
+* alterações de estrutura (time/gestão/áreas)
 
-### Layout padrão do arquivo
+Após mudanças organizacionais, surgem inconsistências:
 
-* **Base A (antiga)**: colunas **A:B**
-* **Base B (recriada)**: colunas **D:E**
+* usuários que deveriam ter acesso e não têm
+* espelhamentos incompletos
+* diferenças entre bases “fonte” e “alvo”
 
-> O layout pode ser ajustado diretamente no código, caso necessário.
+Este projeto automatiza a conciliação e entrega um output claro para correção.
 
 ---
 
-## Como rodar o projeto
+## Aviso importante (uso autorizado)
 
-### 1) Clonar o repositório
+Este repositório é apresentado como **exemplo técnico/portfólio**.
 
-```bash
-git clone <url-do-repositorio>
-cd conciliador-espelhamento-excel
-```
-
-### 2) Criar ambiente virtual (opcional, recomendado)
-
-```bash
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# Linux / macOS
-source .venv/bin/activate
-```
-
-### 3) Instalar dependências
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4) Executar
-
-```bash
-python main.py
-```
-
-O script irá:
-
-* ler o arquivo Excel configurado no código
-* processar as bases
-* gerar o arquivo de saída com as abas de conciliação
+* Utilize apenas **bases e ambientes autorizados**
+* Não publique dados reais (nomes, e-mails, IDs internos, permissões sensíveis)
+* Respeite LGPD e políticas internas
 
 ---
 
 ## Estrutura do projeto
 
+```text
+.
+├─ main.py
+├─ requirements.txt
+├─ LICENSE
+└─ README.md
 ```
-conciliador-espelhamento-excel/
-├── main.py
-├── requirements.txt
-├── README.md
-├── LICENSE
-└── .gitignore
+
+---
+
+## Requisitos
+
+* Python 3.10+
+* Leitura de Excel (via `pandas` + engine do Excel conforme seu ambiente)
+
+---
+
+## Instalação
+
+```bash
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+
+# Linux / macOS
+source .venv/bin/activate
+
+pip install -r requirements.txt
 ```
 
 ---
 
-## Decisões de projeto
+## Uso
 
-* Uso de **Python + pandas** para rapidez e clareza na manipulação de Excel
-* Estrutura propositalmente enxuta, focada em uso operacional
-* Comparação baseada em pares normalizados para evitar falsos positivos
+1. Coloque as planilhas de entrada (origem e destino) em um local seguro (fora do Git).
+
+2. Execute:
+
+```bash
+python main.py
+```
+
+> Se seu script receber caminhos por parâmetro ou exigir ajustes, mantenha isso documentado no topo do `main.py`
+> (por exemplo: `SOURCE_PATH`, `TARGET_PATH` e `OUTPUT_PATH`).
 
 ---
 
-## Limitações conhecidas
+## Saídas geradas
 
-* Layout do Excel é fixo por padrão
-* Execução via script (sem interface gráfica)
-* Sempre gera um novo arquivo de saída
+* Relatório com itens **faltantes no destino** (base para replicação/recriação)
+* (Opcional) abas auxiliares para auditoria (dependendo do script)
 
 ---
 
-## Possíveis melhorias futuras
+## Sanitização de dados
 
-* [ ] Tornar o layout configurável via parâmetros
-* [ ] Adicionar logs estruturados
-* [ ] Criar interface simples (CLI ou GUI)
-* [ ] Validações adicionais de consistência
+Este repositório **não contém dados reais**.
+
+Recomendação:
+
+* mantenha arquivos `.xlsx` fora do repositório
+* suba apenas `example.xlsx` (fake) se quiser demonstrar formato futuramente
 
 ---
 
