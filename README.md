@@ -1,4 +1,4 @@
-# Conciliador de Espelhamento de Acessos (Excel)
+# Excel Access Reconciliation Tool (Pandas + Excel)
 
 Ferramenta em Python para **conciliar espelhamentos de acesso entre duas bases Excel**, identificando **o que está faltando replicar** após reorganizações de times, mudanças de hierarquia ou ajustes em matrizes de permissão.
 
